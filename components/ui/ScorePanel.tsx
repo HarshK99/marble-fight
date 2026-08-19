@@ -1,10 +1,10 @@
 "use client";
 
 import { PLAYER_COLORS } from "@/lib/physics/constants";
+import { getPlayerLabel } from "@/lib/playerLabels";
 import { useGameStore } from "@/lib/store/gameStore";
 import type { PlayerId } from "@/lib/types";
 
-const PLAYER_LABELS: Record<PlayerId, string> = { p1: "Blue", p2: "Red" };
 const PLAYER_ORDER: readonly PlayerId[] = ["p1", "p2"];
 
 export default function ScorePanel() {
@@ -12,6 +12,7 @@ export default function ScorePanel() {
   const currentPlayer = useGameStore((state) => state.currentPlayer);
   const round = useGameStore((state) => state.round);
   const phase = useGameStore((state) => state.phase);
+  const gameMode = useGameStore((state) => state.gameMode);
 
   return (
     <div
@@ -30,7 +31,7 @@ export default function ScorePanel() {
             />
             <span className="text-lg font-semibold tabular-nums text-white">{scores[player]}</span>
             <span className="text-[10px] uppercase tracking-wide text-white/60">
-              {PLAYER_LABELS[player]}
+              {getPlayerLabel(player, gameMode)}
             </span>
           </div>
         ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useRef } from "react";
+import { Suspense, useMemo, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ContactShadows, Environment, PerspectiveCamera } from "@react-three/drei";
 import { CuboidCollider, Physics, RigidBody, type RapierRigidBody } from "@react-three/rapier";
@@ -14,6 +14,7 @@ import {
   TABLE_RESTITUTION,
 } from "@/lib/physics/constants";
 import type { PlayerId } from "@/lib/types";
+import BotPlayer from "./BotPlayer";
 import CameraRig from "./CameraRig";
 import Marble from "./Marble";
 import RoundManager from "./RoundManager";
@@ -22,7 +23,10 @@ import Table from "./Table";
 export default function GameCanvas() {
   const p1Ref = useRef<RapierRigidBody>(null);
   const p2Ref = useRef<RapierRigidBody>(null);
-  const bodyRefs: Record<PlayerId, typeof p1Ref> = { p1: p1Ref, p2: p2Ref };
+  const bodyRefs = useMemo<Record<PlayerId, typeof p1Ref>>(
+    () => ({ p1: p1Ref, p2: p2Ref }),
+    [],
+  );
 
   return (
     <div className="game-canvas-layer absolute inset-0">
@@ -79,6 +83,7 @@ export default function GameCanvas() {
           />
 
           <RoundManager bodyRefs={bodyRefs} />
+          <BotPlayer bodyRefs={bodyRefs} />
         </Physics>
 
         <ContactShadows

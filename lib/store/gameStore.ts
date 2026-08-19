@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { DEFAULT_BEST_OF } from "@/lib/physics/constants";
-import type { GamePhase, MatchConfig, PlayerId } from "@/lib/types";
+import type { GameMode, GamePhase, MatchConfig, PlayerId } from "@/lib/types";
 
 function otherPlayer(player: PlayerId): PlayerId {
   return player === "p1" ? "p2" : "p1";
@@ -20,6 +20,9 @@ type GameStore = {
   matchConfig: MatchConfig;
   winner: PlayerId | null;
   shake: ShakeEvent;
+  gameMode: GameMode;
+  /** Increments whenever marbles need a physical reposition outside the knockoff flow (mode switch, "Play Again"). */
+  boardResetToken: number;
 
   /** Called once a flick's impulse has been applied; locks input until the turn resolves. */
   startResolving: () => void;
@@ -36,6 +39,8 @@ type GameStore = {
   resetMatch: () => void;
   /** Fires a short decaying camera-shake pulse (see CameraRig); intensity is a small world-unit magnitude. */
   triggerShake: (intensity: number) => void;
+  /** Switches game mode and starts a fresh match (scores, phase, board position all reset). */
+  setGameMode: (mode: GameMode) => void;
 };
 
 const initialScores: Record<PlayerId, number> = { p1: 0, p2: 0 };
@@ -48,6 +53,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   matchConfig: { bestOf: DEFAULT_BEST_OF },
   winner: null,
   shake: { token: 0, intensity: 0 },
+  gameMode: "bot",
+  boardResetToken: 0,
 
   startResolving: () => set({ phase: "resolving" }),
 
@@ -82,14 +89,26 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   resetMatch: () =>
-    set({
+    set((state) => ({
       currentPlayer: "p1",
       phase: "aiming",
       scores: { ...initialScores },
       round: 1,
       winner: null,
-    }),
+      boardResetToken: state.boardResetToken + 1,
+    })),
 
   triggerShake: (intensity) =>
     set((state) => ({ shake: { token: state.shake.token + 1, intensity } })),
+
+  setGameMode: (mode) =>
+    set((state) => ({
+      gameMode: mode,
+      currentPlayer: "p1",
+      phase: "aiming",
+      scores: { ...initialScores },
+      round: 1,
+      winner: null,
+      boardResetToken: state.boardResetToken + 1,
+    })),
 }));

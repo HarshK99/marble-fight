@@ -1,5 +1,6 @@
 import GameCanvas from "@/components/game/GameCanvas";
 import ScorePanel from "@/components/ui/ScorePanel";
+import SettingsMenu from "@/components/ui/SettingsMenu";
 import WinScreen from "@/components/ui/WinScreen";
 
 export default function Home() {
@@ -7,6 +8,7 @@ export default function Home() {
     <main className="relative flex-1 overflow-hidden bg-black">
       <GameCanvas />
       <ScorePanel />
+      <SettingsMenu />
       <WinScreen />
     </main>
   );

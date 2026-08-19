@@ -73,3 +73,13 @@ export const SHAKE_INTENSITY_KNOCKOFF = 0.18;
 export const AIM_LINE_MAX_LENGTH = 1.6;
 export const AIM_LINE_DASH_SIZE = 0.12;
 export const AIM_LINE_DASH_GAP = 0.08;
+
+// Which player slot the bot controls in "bot" game mode.
+export const BOT_PLAYER: PlayerId = "p2";
+
+// Bot shot selection: aim at the opponent with some random error rather
+// than a laser-precise aimbot, so it's simple and beatable.
+export const BOT_THINK_DELAY_MS = 900;
+export const BOT_AIM_JITTER_RADIANS = Math.PI / 10.5; // ~17 degrees
+export const BOT_MIN_POWER_FRACTION = 0.55;
+export const BOT_MAX_POWER_FRACTION = 0.95;

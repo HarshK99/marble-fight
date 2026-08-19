@@ -4,7 +4,7 @@ import { useCallback, useRef, type RefObject } from "react";
 import type { ThreeEvent } from "@react-three/fiber";
 import type { RapierRigidBody } from "@react-three/rapier";
 import { playSound } from "@/lib/audio/playSound";
-import { MAX_DRAG_PIXELS, MAX_IMPULSE, MIN_DRAG_PIXELS } from "@/lib/physics/constants";
+import { BOT_PLAYER, MAX_DRAG_PIXELS, MAX_IMPULSE, MIN_DRAG_PIXELS } from "@/lib/physics/constants";
 import { useGameStore } from "@/lib/store/gameStore";
 import type { PlayerId } from "@/lib/types";
 
@@ -46,8 +46,9 @@ export function useFlickController(
 
   const onPointerDown = useCallback(
     (event: ThreeEvent<PointerEvent>) => {
-      const { phase, currentPlayer } = useGameStore.getState();
-      if (phase !== "aiming" || currentPlayer !== playerId || activeDrag.current) return;
+      const { phase, currentPlayer, gameMode } = useGameStore.getState();
+      const isBotControlled = gameMode === "bot" && playerId === BOT_PLAYER;
+      if (phase !== "aiming" || currentPlayer !== playerId || isBotControlled || activeDrag.current) return;
 
       event.stopPropagation();
       const { pointerId, clientX, clientY } = event.nativeEvent;

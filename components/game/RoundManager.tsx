@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import type { RapierRigidBody } from "@react-three/rapier";
 import { playSound } from "@/lib/audio/playSound";
@@ -38,6 +38,22 @@ function resetMarble(body: RapierRigidBody, position: readonly [number, number, 
  */
 export default function RoundManager({ bodyRefs }: RoundManagerProps) {
   const settledFrames = useRef(0);
+  const boardResetToken = useGameStore((state) => state.boardResetToken);
+  const isFirstMount = useRef(true);
+
+  // Mode switch / "Play Again" can happen mid-flight, outside the normal
+  // knockoff-triggered reset below — this covers that path.
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    const p1Body = bodyRefs.p1.current;
+    const p2Body = bodyRefs.p2.current;
+    if (p1Body) resetMarble(p1Body, MARBLE_START_POSITIONS.p1);
+    if (p2Body) resetMarble(p2Body, MARBLE_START_POSITIONS.p2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only boardResetToken should retrigger this; refs are read fresh via closure regardless of dep list
+  }, [boardResetToken]);
 
   useFrame(() => {
     if (useGameStore.getState().phase !== "resolving") {

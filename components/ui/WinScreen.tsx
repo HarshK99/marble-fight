@@ -1,15 +1,14 @@
 "use client";
 
 import { PLAYER_COLORS } from "@/lib/physics/constants";
+import { getPlayerLabel } from "@/lib/playerLabels";
 import { useGameStore } from "@/lib/store/gameStore";
-import type { PlayerId } from "@/lib/types";
-
-const PLAYER_LABELS: Record<PlayerId, string> = { p1: "Blue", p2: "Red" };
 
 export default function WinScreen() {
   const phase = useGameStore((state) => state.phase);
   const winner = useGameStore((state) => state.winner);
   const scores = useGameStore((state) => state.scores);
+  const gameMode = useGameStore((state) => state.gameMode);
   const resetMatch = useGameStore((state) => state.resetMatch);
 
   if (phase !== "matchEnd" || !winner) return null;
@@ -24,7 +23,7 @@ export default function WinScreen() {
     >
       <div className="flex w-full max-w-xs flex-col items-center gap-5 rounded-3xl bg-neutral-900 px-6 py-8 text-center shadow-xl">
         <span className="h-4 w-4 rounded-full" style={{ backgroundColor: PLAYER_COLORS[winner] }} />
-        <h1 className="text-2xl font-bold text-white">{PLAYER_LABELS[winner]} wins!</h1>
+        <h1 className="text-2xl font-bold text-white">{getPlayerLabel(winner, gameMode)} wins!</h1>
         <p className="tabular-nums text-sm text-white/70">
           Final score {scores.p1} – {scores.p2}
         </p>
