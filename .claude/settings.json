@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(npx --yes playwright --version)",
+      "Bash(curl -s \"https://api.polyhaven.com/files/asphalt_04\")",
+      "Bash(curl -sSL -o asphalt_04_diff_2k.jpg \"https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/asphalt_04/asphalt_04_diff_2k.jpg\")",
+      "Bash(curl -sSL -o asphalt_04_nor_gl_2k.jpg \"https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/asphalt_04/asphalt_04_nor_gl_2k.jpg\")",
+      "Bash(curl -sSL -o asphalt_04_rough_2k.jpg \"https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/asphalt_04/asphalt_04_rough_2k.jpg\")",
+      "PowerShell(Stop-Process -Id 5796 -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 1; Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; \"done\")",
+      "Bash(node check6.js)",
+      "Bash(node findball.js phase5b-p1-settled.png)",
+      "Bash(node findball.js phase5b-p2-flicked.png)"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+**Prompt:**
+
+> Build a single-player MVP of a physics-based "flick and knock off the table" game using Next.js (App Router), TypeScript, React Three Fiber (`@react-three/fiber`), `@react-three/drei`, and `@react-three/rapier` for physics. Tailwind for UI styling.
+>
+> **Design priority: mobile-first.** This will primarily be played on phones via touch. Build and test the layout, camera framing, and touch controls for a narrow viewport (~375–430px wide) first, then scale up to desktop as an enhancement — not the other way around. Use `touch-action: none` on the canvas to prevent scroll/zoom interference during drag gestures. Buttons and UI chrome should be large enough for thumb taps (min 44px touch targets). Score panel and controls should sit comfortably within safe-area insets (account for notches/home indicators via `env(safe-area-inset-*)`).
+>
+> **Theme:** two marbles on a rough asphalt road surface, viewed from a fixed angled top-down camera, aiming for a realistic (not cartoonish) look.
+>
+> **Visuals:**
+> - Marbles: sphere geometry with `MeshPhysicalMaterial` — low roughness, high clearcoat, slight transmission for a glassy look. Differentiate players via color (e.g. blue vs red tint, or a simple swirl/noise texture inside the glass).
+> - Road surface: a plane using the Poly Haven "Asphalt 04" texture set (2K resolution) — load these three files via `useTexture` from `/public/textures/road/`:
+>   - `asphalt_04_diff_2k.jpg` (diffuse/color map)
+>   - `asphalt_04_nor_gl_2k.jpg` (normal map, OpenGL format)
+>   - `asphalt_04_rough_2k.jpg` (roughness map)
+>   
+>   Set appropriate `repeat`/`wrapS`/`wrapT` on the textures so the asphalt tiles seamlessly across the table plane rather than stretching.
+> - Use `<Environment preset="city">` (drei) for reflections/ambient lighting — good for glossy marble reflections. Add one directional light with shadows enabled (`castShadow`), and drei's `<ContactShadows>` under the marbles for grounding.
+> - Camera: angled top-down, slight perspective, fixed (no orbit controls in the final version). Frame it so the full table is visible on a narrow mobile viewport without excessive letterboxing.
+>
+> **Mechanics:**
+> - Two marbles placed at opposite ends of the table, each a Rapier rigid body (ball collider).
+> - Player flicks their marble via touch drag: track touch/pointer start and end position, compute a 2D vector, convert into an impulse force applied to the rigid body on release. Cap max impulse so flicks feel controlled, not chaotic.
+> - Use screen-space mapping for the flick: take the raw 2D drag vector as it appears on screen (delta X, delta Y in pixels/normalized device coordinates), and map it directly to an X/Z impulse on the table plane — do not unproject through the camera or account for the camera's tilt angle. This is simpler and, for a fixed camera angle, feels just as intuitive. Normalize the drag vector, scale by drag distance (capped at a max), and apply as the impulse direction/magnitude.
+> - Tune Rapier's `friction` and `restitution` for marble behavior specifically: low friction, higher restitution (bouncy, rolls easily) — this feel differs a lot from a heavier object like a pen.
+> - Local two-player pass-and-play only (no AI, no multiplayer, no backend) — alternate turns after each flick resolves.
+> - Detect when a marble's position drops below the table's Y-bound or off its XZ edges → that marble is "knocked off," round ends, other player scores a point.
+> - Best-of-5 (configurable) match structure with a score panel UI, round reset, and a win screen.
+> - Add juice: subtle camera shake or zoom-punch on collision/knockoff, a highlight or trail on the currently-dragged marble, and stub sound effect hooks (e.g. `playSound('collision')`) so audio can be wired up later without restructuring.
+>
+> **Code structure:**
+> - Cleanly separate the R3F scene/physics layer from the UI/game-state layer (use Zustand or a simple context/reducer) so multiplayer or AI can be added later without a rewrite.
+> - Mark the 3D scene component `"use client"` since R3F/Rapier only run client-side.
+> - Add a code comment block at the top of the road material setup noting the exact texture file paths expected in `/public/textures/road/`, so it's obvious what to drop in.
+>
+> Keep it minimal but production-quality — no placeholder gray boxes, use the specified materials/lighting so it already looks intentional on first run. Don't build any backend, auth, or multiplayer for this MVP.
