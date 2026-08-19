@@ -13,12 +13,23 @@ export default function SettingsMenu() {
   const [open, setOpen] = useState(false);
   const gameMode = useGameStore((state) => state.gameMode);
   const setGameMode = useGameStore((state) => state.setGameMode);
+  const muted = useGameStore((state) => state.muted);
+  const toggleMute = useGameStore((state) => state.toggleMute);
 
   return (
     <div
       className="absolute right-3 z-30 flex flex-col items-end gap-2"
       style={{ top: "max(0.75rem, env(safe-area-inset-top))" }}
     >
+      <button
+        type="button"
+        onClick={toggleMute}
+        aria-label={muted ? "Unmute" : "Mute"}
+        className="flex h-11 w-11 items-center justify-center rounded-full bg-black/40 text-lg text-white backdrop-blur-sm transition-transform active:scale-95"
+      >
+        {muted ? "🔇" : "🔊"}
+      </button>
+
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}

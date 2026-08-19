@@ -83,3 +83,6 @@ export const BOT_THINK_DELAY_MS = 900;
 export const BOT_AIM_JITTER_RADIANS = Math.PI / 10.5; // ~17 degrees
 export const BOT_MIN_POWER_FRACTION = 0.55;
 export const BOT_MAX_POWER_FRACTION = 0.95;
+
+// Roll sound ("juice"): marble linear speed that maps to full roll volume.
+export const ROLL_SOUND_REFERENCE_SPEED = 3;

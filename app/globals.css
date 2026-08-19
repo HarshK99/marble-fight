@@ -35,3 +35,22 @@ body {
 .game-canvas-layer {
   touch-action: none;
 }
+
+/* TurnIndicator's toast: fades in, holds, fades out — restarted by keying
+   the element on turnToken rather than driving it from a JS timer. */
+@keyframes turn-toast {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

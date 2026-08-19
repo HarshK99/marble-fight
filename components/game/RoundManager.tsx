@@ -11,17 +11,13 @@ import {
   SHAKE_INTENSITY_KNOCKOFF,
 } from "@/lib/physics/constants";
 import { isOffTable } from "@/lib/physics/offTableDetection";
+import { vectorLength } from "@/lib/physics/vectorLength";
 import { useGameStore } from "@/lib/store/gameStore";
 import type { PlayerId } from "@/lib/types";
 
 type RoundManagerProps = {
   bodyRefs: Record<PlayerId, RefObject<RapierRigidBody | null>>;
 };
-
-function speedOf(body: RapierRigidBody): number {
-  const v = body.linvel();
-  return Math.hypot(v.x, v.y, v.z);
-}
 
 function resetMarble(body: RapierRigidBody, position: readonly [number, number, number]) {
   body.setTranslation({ x: position[0], y: position[1], z: position[2] }, true);
@@ -86,7 +82,8 @@ export default function RoundManager({ bodyRefs }: RoundManagerProps) {
     }
 
     const bothSlow =
-      speedOf(p1Body) < SETTLE_LINEAR_SPEED_EPSILON && speedOf(p2Body) < SETTLE_LINEAR_SPEED_EPSILON;
+      vectorLength(p1Body.linvel()) < SETTLE_LINEAR_SPEED_EPSILON &&
+      vectorLength(p2Body.linvel()) < SETTLE_LINEAR_SPEED_EPSILON;
 
     if (!bothSlow) {
       settledFrames.current = 0;

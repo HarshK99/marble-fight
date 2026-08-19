@@ -14,6 +14,7 @@ import {
   TABLE_RESTITUTION,
 } from "@/lib/physics/constants";
 import type { PlayerId } from "@/lib/types";
+import AudioDriver from "./AudioDriver";
 import BotPlayer from "./BotPlayer";
 import CameraRig from "./CameraRig";
 import Marble from "./Marble";
@@ -84,6 +85,7 @@ export default function GameCanvas() {
 
           <RoundManager bodyRefs={bodyRefs} />
           <BotPlayer bodyRefs={bodyRefs} />
+          <AudioDriver bodyRefs={bodyRefs} />
         </Physics>
 
         <ContactShadows

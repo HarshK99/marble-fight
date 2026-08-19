@@ -3,7 +3,7 @@
 import { useCallback, useRef, type RefObject } from "react";
 import type { ThreeEvent } from "@react-three/fiber";
 import type { RapierRigidBody } from "@react-three/rapier";
-import { playSound } from "@/lib/audio/playSound";
+import { ensureAudioUnlocked, playSound } from "@/lib/audio/playSound";
 import { BOT_PLAYER, MAX_DRAG_PIXELS, MAX_IMPULSE, MIN_DRAG_PIXELS } from "@/lib/physics/constants";
 import { useGameStore } from "@/lib/store/gameStore";
 import type { PlayerId } from "@/lib/types";
@@ -46,6 +46,11 @@ export function useFlickController(
 
   const onPointerDown = useCallback(
     (event: ThreeEvent<PointerEvent>) => {
+      // First real user gesture in the app is the right place to unlock
+      // audio on mobile — unconditional, even if this particular tap ends
+      // up gated out below.
+      ensureAudioUnlocked();
+
       const { phase, currentPlayer, gameMode } = useGameStore.getState();
       const isBotControlled = gameMode === "bot" && playerId === BOT_PLAYER;
       if (phase !== "aiming" || currentPlayer !== playerId || isBotControlled || activeDrag.current) return;

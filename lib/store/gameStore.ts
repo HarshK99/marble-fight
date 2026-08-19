@@ -23,6 +23,9 @@ type GameStore = {
   gameMode: GameMode;
   /** Increments whenever marbles need a physical reposition outside the knockoff flow (mode switch, "Play Again"). */
   boardResetToken: number;
+  muted: boolean;
+  /** Increments every time phase transitions to "aiming" for a new turn — lets the TurnIndicator toast key off a fresh remount instead of a JS timer. */
+  turnToken: number;
 
   /** Called once a flick's impulse has been applied; locks input until the turn resolves. */
   startResolving: () => void;
@@ -41,6 +44,7 @@ type GameStore = {
   triggerShake: (intensity: number) => void;
   /** Switches game mode and starts a fresh match (scores, phase, board position all reset). */
   setGameMode: (mode: GameMode) => void;
+  toggleMute: () => void;
 };
 
 const initialScores: Record<PlayerId, number> = { p1: 0, p2: 0 };
@@ -55,12 +59,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
   shake: { token: 0, intensity: 0 },
   gameMode: "bot",
   boardResetToken: 0,
+  muted: false,
+  turnToken: 0,
 
   startResolving: () => set({ phase: "resolving" }),
 
   endTurn: () => {
     if (get().phase !== "resolving") return;
-    set((state) => ({ phase: "aiming", currentPlayer: otherPlayer(state.currentPlayer) }));
+    set((state) => ({
+      phase: "aiming",
+      currentPlayer: otherPlayer(state.currentPlayer),
+      turnToken: state.turnToken + 1,
+    }));
   },
 
   scoreRound: (loser) => {
@@ -85,7 +95,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   beginNextRound: () => {
     if (get().phase !== "roundEnd") return;
-    set({ phase: "aiming" });
+    set((state) => ({ phase: "aiming", turnToken: state.turnToken + 1 }));
   },
 
   resetMatch: () =>
@@ -96,6 +106,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       round: 1,
       winner: null,
       boardResetToken: state.boardResetToken + 1,
+      turnToken: state.turnToken + 1,
     })),
 
   triggerShake: (intensity) =>
@@ -110,5 +121,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       round: 1,
       winner: null,
       boardResetToken: state.boardResetToken + 1,
+      turnToken: state.turnToken + 1,
     })),
+
+  toggleMute: () => set((state) => ({ muted: !state.muted })),
 }));
